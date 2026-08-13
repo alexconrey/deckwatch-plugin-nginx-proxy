@@ -15,13 +15,12 @@
 //! and sidecars, then injects them into all application deployments on the next
 //! reconcile cycle.
 
-use deckwatch_plugin_sdk::{
-    ConfigField, ConfigFieldType, PluginResource,
-    ResourceDeprovisionRequest, ResourceDeprovisionResult,
-    ResourceProvisionRequest, ResourceProvisionResult, SidecarSpec,
-};
 #[cfg(target_arch = "wasm32")]
 use deckwatch_plugin_sdk::PluginMetadata;
+use deckwatch_plugin_sdk::{
+    ConfigField, ConfigFieldType, PluginResource, ResourceDeprovisionRequest,
+    ResourceDeprovisionResult, ResourceProvisionRequest, ResourceProvisionResult, SidecarSpec,
+};
 #[cfg(target_arch = "wasm32")]
 use extism_pdk::*;
 
@@ -130,7 +129,9 @@ pub fn metadata() -> FnResult<Json<PluginMetadata>> {
     Ok(Json(PluginMetadata {
         name: "nginx-proxy".into(),
         version: env!("CARGO_PKG_VERSION").into(),
-        description: "Provisions an nginx reverse-proxy sidecar via the Application Infrastructure tab".into(),
+        description:
+            "Provisions an nginx reverse-proxy sidecar via the Application Infrastructure tab"
+                .into(),
         provides: vec!["sidecar:nginx-proxy".into()],
         depends_on: vec![],
         optional_depends_on: vec![],
@@ -180,7 +181,10 @@ mod tests {
             application_name: "my-app".into(),
             namespace: "production".into(),
             resource_id: "proxy".into(),
-            fields: fields.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect(),
+            fields: fields
+                .iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
         }
     }
 
@@ -218,7 +222,11 @@ mod tests {
     #[test]
     fn provision_defaults_inject_sidecar_on_port_80() {
         let result = provision_inner(&provision_req(&[]));
-        assert!(result.errors.is_empty(), "no errors expected: {:?}", result.errors);
+        assert!(
+            result.errors.is_empty(),
+            "no errors expected: {:?}",
+            result.errors
+        );
         assert_eq!(result.sidecars.len(), 1);
         let sc = &result.sidecars[0];
         assert_eq!(sc.name, "nginx-proxy");
@@ -242,7 +250,10 @@ mod tests {
     fn provision_stamps_annotation() {
         let result = provision_inner(&provision_req(&[]));
         assert_eq!(
-            result.deployment_annotations.get("deckwatch.io/nginx-proxy").map(String::as_str),
+            result
+                .deployment_annotations
+                .get("deckwatch.io/nginx-proxy")
+                .map(String::as_str),
             Some("provisioned")
         );
     }
@@ -250,20 +261,29 @@ mod tests {
     #[test]
     fn provision_injects_no_env_vars_into_primary_container() {
         let result = provision_inner(&provision_req(&[]));
-        assert!(result.state.is_empty(), "nginx proxy should not inject application env vars");
+        assert!(
+            result.state.is_empty(),
+            "nginx proxy should not inject application env vars"
+        );
     }
 
     #[test]
     fn provision_sidecar_has_resource_requests() {
         let result = provision_inner(&provision_req(&[]));
         assert!(result.sidecars[0].cpu.is_some(), "cpu request must be set");
-        assert!(result.sidecars[0].memory.is_some(), "memory request must be set");
+        assert!(
+            result.sidecars[0].memory.is_some(),
+            "memory request must be set"
+        );
     }
 
     #[test]
     fn deprovision_returns_non_empty_message() {
         let result = deprovision_inner(&deprovision_req());
         assert!(result.errors.is_empty());
-        assert!(!result.message.is_empty(), "deprovision must return a user-visible message");
+        assert!(
+            !result.message.is_empty(),
+            "deprovision must return a user-visible message"
+        );
     }
 }
