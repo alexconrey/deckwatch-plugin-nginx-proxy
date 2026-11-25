@@ -1,1 +1,0 @@
-/private/tmp/deckwatch-plugins/deckwatch-plugin-nginx-proxy/target/wasm32-unknown-unknown/release/libdeckwatch_plugin_nginx_proxy.rlib: /private/tmp/deckwatch-plugins/deckwatch-plugin-nginx-proxy/src/lib.rs
